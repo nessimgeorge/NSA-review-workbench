@@ -17,7 +17,11 @@ def main():
             records.append(dict(service_code="99284", place_of_service="23", region=region,
                                 service_year="2025", modifier="N/R", provider_offer=provider,
                                 payer_offer=payer, prevailing_offer=provider if rng.random()<.7 else payer))
-    raw = pd.DataFrame(records).to_csv(index=False).encode()
+   raw = (
+    pd.DataFrame(records)
+    .to_csv(index=False, lineterminator="\n")
+    .encode("utf-8")
+)
     (DATA / "demo_peers.csv").write_bytes(raw)
     (DATA / "demo_manifest.json").write_bytes(json_bytes({"mode": "SYNTHETIC DEMO", "reporting_period": "Invented practice data",
         "source_filename": "make_demo.py seed 21", "source_sha256": digest(raw), "subset_sha256": digest(raw),
@@ -35,7 +39,11 @@ def main():
     cases[5]["service_code"] = "99285"
     cases[6]["proposed_offer"] = -20
     cases[7]["service_year"] = "2030"
-    pd.DataFrame(cases).to_csv(DATA / "sample_cases.csv", index=False)
+  pd.DataFrame(cases).to_csv(
+    DATA / "sample_cases.csv",
+    index=False,
+    lineterminator="\n",
+)
     (DATA / "raw").mkdir(exist_ok=True)
     print("Created invented peers and 20 synthetic cases in data/.")
 
