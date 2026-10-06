@@ -2,6 +2,8 @@
 
 This project turns a batch of **synthetic** No Surprises Act IDR cases into a review queue. It finds historical CMS decided-dispute line items with the same code, place of service, geography, service year, and modifier; computes descriptive benchmarks; flags weak comparisons and unusual proposed amounts; lets a human record whether the comparison is usable; and exports an evidence packet.
 
+**[Try the live NSA Review Workbench](https://nsa-review-workbench.streamlit.app/)** — explore the complete synthetic benchmarking, exception-review, human-approval, and evidence-export workflow without installing anything; optional AI drafting runs locally through Ollama.
+
 ![IDR Review Workbench application](docs/app-screenshot.png)
 
 ## Executive summary
