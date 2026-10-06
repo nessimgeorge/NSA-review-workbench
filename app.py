@@ -19,27 +19,56 @@ st.info("Prototype for synthetic case uploads. Historical context only; no payme
 
 with st.sidebar:
     st.header("1. Choose evidence")
-  reference_options = ["SYNTHETIC DEMO"]
 
-cms_files_available = (
-    (DATA / "cms_peers.csv").exists()
-    and (DATA / "cms_manifest.json").exists()
-)
+    reference_options = ["SYNTHETIC DEMO"]
 
-if cms_files_available:
-    reference_options.append("CMS public data")
+    cms_files_available = (
+        (DATA / "cms_peers.csv").exists()
+        and (DATA / "cms_manifest.json").exists()
+    )
 
-mode = st.selectbox(
-    "Reference data",
-    reference_options,
-)
-    minimum = st.number_input("Minimum peer count", min_value=2, max_value=1000, value=30)
-    tail = st.select_slider("Lower percentile cutoff (upper = 100 minus this)", options=[5, 10, 15, 20, 25], value=10)
-    fallback = st.checkbox("Allow national fallback when exact peers are insufficient", value=False)
-    st.caption("Counts and percentile cutoffs are demo rules, not validated credibility standards. National fallback always receives a review flag.")
+    if cms_files_available:
+        reference_options.append("CMS public data")
+
+    mode = st.selectbox(
+        "Reference data",
+        reference_options,
+    )
+
+    minimum = st.number_input(
+        "Minimum peer count",
+        min_value=2,
+        max_value=1000,
+        value=30,
+    )
+
+    tail = st.select_slider(
+        "Lower percentile cutoff (upper = 100 minus this)",
+        options=[5, 10, 15, 20, 25],
+        value=10,
+    )
+
+    fallback = st.checkbox(
+        "Allow national fallback when exact peers are insufficient",
+        value=False,
+    )
+
+    st.caption(
+        "Counts and percentile cutoffs are demo rules, not validated "
+        "credibility standards. National fallback always receives a review flag."
+    )
+
     st.header("2. Optional local AI")
-    model = st.text_input("Installed Ollama model name", value="gemma4:e2b")
-    st.caption("Only computed evidence goes to Ollama at 127.0.0.1. The app works without it.")
+
+    model = st.text_input(
+        "Installed Ollama model name",
+        value="gemma4:e2b",
+    )
+
+    st.caption(
+        "Only computed evidence goes to Ollama at 127.0.0.1. "
+        "The app works without it."
+    )
 
 prefix = "demo" if mode == "SYNTHETIC DEMO" else "cms"
 path = DATA / f"{prefix}_peers.csv"
