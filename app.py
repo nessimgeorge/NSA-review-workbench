@@ -87,22 +87,247 @@ else:
     frame["review_decision"] = frame.case_id.map(latest.set_index("case_id").decision).fillna("Not reviewed")
 for numeric_column in ["proposed_offer", "n", "median", "percentile"]:
     frame[numeric_column] = pd.to_numeric(frame[numeric_column], errors="coerce")
-left, mid, right = st.columns(3)
-left.metric("Cases", len(frame))
-mid.metric("Cases with a rule flag", int(frame["flags"].ne("No rule triggered").sum()))
-right.metric("Cases with a saved review", len(latest))
-st.subheader("4. Review queue")
+st.markdown("### Review overview")
+
+overview_1, overview_2, overview_3, overview_4 = st.columns(4)
+
+overview_1.metric(
+    "Cases submitted",
+    f"{len(frame):,}",
+)
+
+overview_2.metric(
+    "Cases requiring attention",
+    f"{int(frame['flags'].ne('No rule triggered').sum()):,}",
+)
+
+overview_3.metric(
+    "Human reviews saved",
+    f"{len(latest):,}",
+)
+
+overview_4.metric(
+    "Reference observations",
+    f"{len(peers):,}",
+)
+st.subheader("Case review queue")
 st.caption("Higher review priority appears first. 'No rule triggered' does not mean an offer is appropriate.")
-st.dataframe(frame[["case_id", "proposed_offer", "flags", "comparison", "n", "median", "percentile", "review_decision"]], hide_index=True, width="stretch")
+queue_columns = [
+    "case_id",
+    "proposed_offer",
+    "flags",
+    "comparison",
+    "n",
+    "median",
+    "percentile",
+    "review_decision",
+]
+
+st.dataframe(
+    frame[queue_columns],
+    hide_index=True,
+    width="stretch",
+    column_config={
+        "case_id": st.column_config.TextColumn(
+            "Case",
+            help="Synthetic, non-identifying case label",
+            width="medium",
+        ),
+        "proposed_offer": st.column_config.NumberColumn(
+            "Proposed offer",
+            help="Invented offer amount supplied in the synthetic case file",
+            format="dollar",
+        ),
+        "flags": st.column_config.TextColumn(
+            "Review status",
+            help="Deterministic rule-based review flag",
+            width="medium",
+        ),
+        "comparison": st.column_config.TextColumn(
+            "Comparison basis",
+            help="Exact-region benchmark or disclosed national fallback",
+            width="large",
+        ),
+        "n": st.column_config.NumberColumn(
+            "Peers used",
+            help="Number of historical observations used",
+            format="localized",
+        ),
+        "median": st.column_config.NumberColumn(
+            "Median selected offer",
+            help="Median historical selected offer in the comparison group",
+            format="dollar",
+        ),
+        "percentile": st.column_config.NumberColumn(
+            "Offer percentile",
+            help="Midrank percentile of the proposed offer",
+            format="%.1f%%",
+        ),
+        "review_decision": st.column_config.TextColumn(
+            "Human review",
+            width="medium",
+        ),
+    },
+)
 
 selected_id = st.selectbox("Open case", frame.case_id.tolist())
 result = next(r for r in results if r["case_id"] == selected_id)
 st.subheader(f"Case {selected_id}")
-st.write(f"**Flags:** {result['flags']} | **Comparison:** {result['comparison']}")
+flag_text = result["flags"]
+
+if flag_text in {"Missing/invalid input", "Outside prototype scope"}:
+    st.error(f"Action required: {flag_text}")
+elif "Insufficient comparables" in flag_text:
+    st.warning(f"Review limitation: {flag_text}")
+elif "Geography broadened" in flag_text:
+    st.warning(f"Broader comparison used: {flag_text}")
+elif "Unusual offer" in flag_text:
+    st.warning(f"Offer outside the configured benchmark range: {flag_text}")
+else:
+    st.success(
+        "No deterministic review rule triggered. "
+        "This does not establish that the offer is appropriate."
+    )
+
+st.caption(f"Comparison basis: {result['comparison']}")
 st.write(result["note"])
-detail = pd.DataFrame({"Metric": ["Exact-region count", "Used count", f"P{tail} selected offer", "Median selected offer", f"P{100-tail} selected offer", "Offer percentile (midrank)", "Provider offer median", "Provider valid count", "Payer offer median", "Payer valid count"],
-    "Value": [str(result[k]) if result[k] is not None else "Unavailable" for k in ["exact_n", "n", "p_low", "median", "p_high", "percentile", "provider_median", "provider_n", "payer_median", "payer_n"]]})
-st.dataframe(detail, hide_index=True)
+
+def numeric_value(value):
+    """Return a usable number or None for blank, missing, or invalid values."""
+    if value is None:
+        return None
+
+    if isinstance(value, str) and not value.strip():
+        return None
+
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+
+    if pd.isna(number):
+        return None
+
+    return number
+
+
+def format_currency(value):
+    number = numeric_value(value)
+
+    if number is None:
+        return "Unavailable"
+
+    return f"${number:,.2f}"
+
+
+def format_count(value):
+    number = numeric_value(value)
+
+    if number is None:
+        return "Unavailable"
+
+    return f"{int(number):,}"
+
+
+def format_percentile(value):
+    number = numeric_value(value)
+
+    if number is None:
+        return "Unavailable"
+
+    return f"{number:.1f}%"
+
+st.markdown("#### Case summary")
+
+summary_1, summary_2, summary_3, summary_4 = st.columns(4)
+
+summary_1.metric(
+    "Proposed offer",
+    format_currency(result["proposed_offer"]),
+)
+summary_2.metric(
+    "Historical peers used",
+    format_count(result["n"]),
+)
+summary_3.metric(
+    "Median selected offer",
+    format_currency(result["median"]),
+)
+summary_4.metric(
+    "Offer percentile",
+    format_percentile(result["percentile"]),
+)
+percentile_value = numeric_value(result["percentile"])
+
+if percentile_value is not None:
+    st.markdown("#### Position within the historical distribution")
+
+    progress_value = min(max(percentile_value / 100, 0.0), 1.0)
+
+    st.progress(
+        progress_value,
+        text=f"Historical selected-offer percentile: {percentile_value:.1f}%",
+    )
+
+    st.caption(
+        f"The configured descriptive review band is P{tail} through "
+        f"P{100-tail}. Values outside that band receive an unusual-offer flag "
+        "only when the minimum peer-count requirement is met."
+    )
+else:
+    st.info(
+        "Offer position is unavailable because a valid benchmark and proposed "
+        "offer are required."
+    )
+
+st.markdown("#### Historical benchmark range")
+st.markdown("#### Historical benchmark range")
+
+range_1, range_2, range_3 = st.columns(3)
+
+range_1.metric(
+    f"P{tail} selected offer",
+    format_currency(result["p_low"]),
+)
+range_2.metric(
+    "Median selected offer",
+    format_currency(result["median"]),
+)
+range_3.metric(
+    f"P{100-tail} selected offer",
+    format_currency(result["p_high"]),
+)
+
+with st.expander("Additional comparison evidence"):
+    additional_evidence = pd.DataFrame(
+        {
+            "Metric": [
+                "Comparison basis",
+                "Exact-region observations",
+                "Total observations used",
+                "Provider offer median",
+                "Provider valid observations",
+                "Payer offer median",
+                "Payer valid observations",
+            ],
+            "Value": [
+                result["comparison"],
+                format_count(result["exact_n"]),
+                format_count(result["n"]),
+                format_currency(result["provider_median"]),
+                format_count(result["provider_n"]),
+                format_currency(result["payer_median"]),
+                format_count(result["payer_n"]),
+            ],
+        }
+    )
+
+    st.dataframe(
+        additional_evidence,
+        hide_index=True,
+        width="stretch",
+    )
+
 if result["n"] < minimum:
     st.warning("Insufficient comparables: descriptive numbers may be shown, but no unusual-offer classification is made.")
 with st.expander("Exact input and computed evidence"):
