@@ -19,7 +19,20 @@ st.info("Prototype for synthetic case uploads. Historical context only; no payme
 
 with st.sidebar:
     st.header("1. Choose evidence")
-    mode = st.selectbox("Reference data", ["SYNTHETIC DEMO", "CMS public data"])
+  reference_options = ["SYNTHETIC DEMO"]
+
+cms_files_available = (
+    (DATA / "cms_peers.csv").exists()
+    and (DATA / "cms_manifest.json").exists()
+)
+
+if cms_files_available:
+    reference_options.append("CMS public data")
+
+mode = st.selectbox(
+    "Reference data",
+    reference_options,
+)
     minimum = st.number_input("Minimum peer count", min_value=2, max_value=1000, value=30)
     tail = st.select_slider("Lower percentile cutoff (upper = 100 minus this)", options=[5, 10, 15, 20, 25], value=10)
     fallback = st.checkbox("Allow national fallback when exact peers are insufficient", value=False)
