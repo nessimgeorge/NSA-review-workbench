@@ -2,8 +2,8 @@
   "mode": "SYNTHETIC DEMO",
   "reporting_period": "Invented practice data",
   "source_filename": "make_demo.py seed 21",
-  "source_sha256": "66b01aed1c84e42a6af9bf7902b0fcdd13144f53a50b69fcc9902328201e1e8b",
-  "subset_sha256": "66b01aed1c84e42a6af9bf7902b0fcdd13144f53a50b69fcc9902328201e1e8b",
+  "source_sha256": "d3e3ebbd89b87b5dc5ec12ef7f88a479010a85fa224385faf9727f8bb5fd5fcc",
+  "subset_sha256": "d3e3ebbd89b87b5dc5ec12ef7f88a479010a85fa224385faf9727f8bb5fd5fcc",
   "filters": "Invented eligible peers; no actual CMS observations",
   "counts": {
     "retained": 168
