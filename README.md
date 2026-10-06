@@ -2,6 +2,36 @@
 
 This project turns a batch of **synthetic** No Surprises Act IDR cases into a review queue. It finds historical CMS decided-dispute line items with the same code, place of service, geography, service year, and modifier; computes descriptive benchmarks; flags weak comparisons and unusual proposed amounts; lets a human record whether the comparison is usable; and exports an evidence packet.
 
+![IDR Review Workbench application](docs/app-screenshot.png)
+
+## Executive summary
+
+The IDR Review Workbench is a healthcare AI portfolio prototype demonstrating how public CMS data, deterministic analytics, a constrained local language model, and human review can work together in a high-stakes workflow.
+
+It does not ask an LLM to calculate benchmarks or decide an appropriate payment. Python performs the matching, validation, percentile calculations, and rule-based flagging. The local model receives only computed facts and drafts an explicitly unverified explanation. A human reviewer evaluates the comparison before an evidence packet is exported.
+
+### What this project demonstrates
+
+- **Healthcare-domain reasoning:** Applies federal No Surprises Act IDR data to a narrowly defined offer-review use case.
+- **Deterministic analytics:** Exact matching, explicit fallback rules, minimum peer-count requirements, percentiles, and reproducible flags.
+- **Responsible AI architecture:** The model cannot alter calculations, recommend payment, predict an outcome, or access raw CMS rows.
+- **Human-in-the-loop controls:** Review decisions and rationales are recorded separately from AI-generated text.
+- **Auditability:** Source hashes, filters, settings, inputs, results, AI prompts, model metadata, reviews, and reference data are preserved in an exportable evidence packet.
+- **Local-model evaluation:** Small Ollama models are tested for factual accuracy, terminology, fallback disclosure, formatting, and instruction adherence.
+
+### Architecture
+
+1. A synthetic case batch is validated against the supported scope.
+2. Python matches each case to eligible historical CMS decided-dispute observations.
+3. The deterministic engine calculates peer counts, selected-offer percentiles, and review flags.
+4. An optional local Ollama model drafts a short explanation from computed facts only.
+5. A human determines whether the comparison is usable for descriptive context.
+6. The application exports a reproducible evidence packet.
+
+> **Important:** This is a portfolio prototype using synthetic case inputs. Historical IDR outcomes are descriptive context—not fair-payment evidence, legal advice, or payment recommendations.
+
+Built by [George Nessim](https://www.linkedin.com/in/george-nessim/),  Claude Certified Architect – Professional.
+
 The language model does not calculate the benchmark and does not recommend a payment. Python calculates the numbers. The optional local model drafts a short explanation from those calculated facts.
 
 ## What you will have when you finish
