@@ -1,0 +1,5 @@
+case_id,service_code,place_of_service,region,service_year,modifier,proposed_offer
+PORTFOLIO-001,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,250
+PORTFOLIO-002,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,630
+PORTFOLIO-003,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,1000
+PORTFOLIO-004,99284,23,"Minneapolis-St. Paul-Bloomington, MN-WI",2025,N/R,500

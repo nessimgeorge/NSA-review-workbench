@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+data/raw/
+data/cms_*
+data/reviews.sqlite*
+.env
+*.zip

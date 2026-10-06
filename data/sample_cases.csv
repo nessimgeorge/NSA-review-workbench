@@ -1,0 +1,21 @@
+case_id,service_code,place_of_service,region,service_year,modifier,proposed_offer
+DEMO-01,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,50
+DEMO-02,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,2000
+DEMO-03,99284,23,"Minneapolis-St. Paul-Bloomington, MN-WI",2025,N/R,500
+DEMO-04,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,
+DEMO-05,99284,23,Unknown practice region,2025,N/R,500
+DEMO-06,99285,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,550
+DEMO-07,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,-20
+DEMO-08,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2030,N/R,550
+DEMO-09,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,500
+DEMO-10,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,550
+DEMO-11,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,500
+DEMO-12,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,550
+DEMO-13,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,500
+DEMO-14,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,550
+DEMO-15,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,500
+DEMO-16,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,550
+DEMO-17,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,500
+DEMO-18,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,550
+DEMO-19,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,500
+DEMO-20,99284,23,"Atlanta-Sandy Springs-Alpharetta, GA",2025,N/R,550
