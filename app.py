@@ -212,7 +212,20 @@ st.dataframe(
     },
 )
 
-selected_id = st.selectbox("Open case", frame.case_id.tolist())
+case_options = frame.case_id.tolist()
+preferred_default_case = "DEMO-19"
+
+default_case_index = (
+    case_options.index(preferred_default_case)
+    if preferred_default_case in case_options
+    else 0
+)
+
+selected_id = st.selectbox(
+    "Open case",
+    case_options,
+    index=default_case_index,
+)
 result = next(r for r in results if r["case_id"] == selected_id)
 st.subheader(f"Case {selected_id}")
 flag_text = result["flags"]
